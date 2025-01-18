@@ -142,14 +142,21 @@
             let interval = {{.BackgroundInterval}} * 1000;
             let currentIndex = 0;
 
+            // Preload images
+            const preloadedImages = [];
+            backgrounds.forEach((background) => {
+                const img = new Image();
+                img.src = "/image?hash=" + background;
+                preloadedImages.push(img);
+            });
+
             function changeBackground() {
                 if (backgrounds.length === 0) {
                     return;
                 }
 
                 currentIndex = (currentIndex + 1) % backgrounds.length;
-                document.body.style.background = "url('/image?hash=" + backgrounds[currentIndex] + "') no-repeat center center fixed";
-                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundImage = `url('/image?hash=${backgrounds[currentIndex]}')`;
             }
 
             if (interval > 0) {
@@ -157,6 +164,7 @@
             }
             changeBackground();
         });
+
     </script>
 </head>
 <body>
