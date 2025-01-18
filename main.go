@@ -22,6 +22,7 @@ type Link struct {
 }
 
 type Config struct {
+	Title              string   `json:"title"`
 	Backgrounds        []string `json:"backgrounds"`
 	Links              []Link   `json:"main_links"`
 	AdditionalLinks    []Link   `json:"additional_links"`
@@ -33,6 +34,7 @@ type Config struct {
 
 func loadConfig(filepath string) (*Config, error) {
 	defaultConfig := &Config{
+		Title:              "Launcher",
 		BackgroundInterval: 10,
 		BackgroundColor:    "#6495ed",
 		FontColorPrimary:   "#333",
@@ -95,6 +97,12 @@ func main() {
 	}
 
 	configFilePath := os.Getenv("CONFIG_FILEPATH")
+	if configFilePath == "" {
+		if _, err := os.Stat("config.json"); err == nil {
+			configFilePath = "config.json"
+		}
+	}
+
 	config, err := loadConfig(configFilePath)
 	if err != nil {
 		log.Fatalf("Critical error: failed to load configuration: %v", err)
