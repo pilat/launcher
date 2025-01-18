@@ -1,0 +1,58 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    tags: ['*']
+  workflow_dispatch: {}
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract Tag or Branch Name
+        id: vars
+        run: |
+          TAG_NAME="${GITHUB_REF##*/}"
+          if [[ "${GITHUB_REF}" == "refs/heads/"* ]]; then
+            IMAGE_TAG="latest"
+          elif [[ "${GITHUB_REF}" == "refs/tags/"* ]]; then
+            IMAGE_TAG="${TAG_NAME}"
+          else
+            IMAGE_TAG="dev"
+          fi
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/pilat/launcher:${{ env.IMAGE_TAG }}
+            ghcr.io/pilat/launcher:latest

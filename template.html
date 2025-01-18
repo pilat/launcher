@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Launcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: {{.BackgroundColor}};
+            background-size: cover;
+            backdrop-filter: blur(8px);
+            transition: background 1s ease-in-out;
+            color: {{.FontColorPrimary}};
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            min-height: 100vh;
+        }
+        .top-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            gap: 25px;
+            width: 100%;
+        }
+        .bottom-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-content: center;
+            gap: 15px;
+            width: 100%;
+
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .link-block {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 10px;
+            text-align: center;
+            transition: background-color 0.3s;
+            width: 200px;
+        }
+        .link-block:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        .link-block a {
+            text-decoration: none;
+            color: {{.FontColorPrimary}};
+            font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        .link-block img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+        .link-block .label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .link-block .description {
+            font-size: 14px;
+            color: {{.FontColorSecondary}};
+        }
+        .small-block {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin: 10px;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+            width: 100%;
+            max-width: 400px;
+        }
+        .small-block:hover {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        .small-block a {
+            text-decoration: none;
+            color: {{.FontColorPrimary}};
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+        }
+        .small-block img {
+            width: 40px;
+            height: 40px;
+            margin: 10px;
+        }
+        .small-block .text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 10px;
+        }
+        .small-block .label {
+            font-weight: bold;
+        }
+        .small-block .description {
+            font-size: 12px;
+            margin-top: 5px;
+            color: {{.FontColorSecondary}};
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const backgrounds = {{.Backgrounds | jsonify}};
+            let interval = {{.BackgroundInterval}} * 1000; // Convert to milliseconds
+            let currentIndex = 0;
+
+            function changeBackground() {
+                if (backgrounds.length === 0) {
+                    return;
+                }
+
+                currentIndex = (currentIndex + 1) % backgrounds.length;
+                document.body.style.background = "url('" + backgrounds[currentIndex] + "') no-repeat center center fixed";
+                document.body.style.backgroundSize = 'cover';
+            }
+
+            if (interval > 0) {
+                setInterval(changeBackground, interval);
+            }
+            changeBackground();
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="top-section">
+            {{range .Links}}
+            <div class="link-block">
+                <a href="{{.URL}}" target="_blank">
+                    <img src="{{.Image}}" alt="{{.Label}}">
+                    <div class="label">{{.Label}}</div>
+                    <div class="description">{{.Description}}</div>
+                </a>
+            </div>
+            {{end}}
+        </div>
+        <div class="bottom-section">
+            {{range .AdditionalLinks}}
+            <div class="small-block">
+                <a href="{{.URL}}" target="_blank">
+                    <img src="{{.Image}}" alt="{{.Label}}">
+                    <div class="text">
+                        <div class="label">{{.Label}}</div>
+                        <div class="description">{{.Description}}</div>
+                    </div>
+                </a>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html>
