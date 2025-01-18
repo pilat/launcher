@@ -18,6 +18,7 @@ LABEL org.opencontainers.image.title="Launcher" \
       org.opencontainers.image.authors="Vladimir Urushev <vkurushev@gmail.com>" \
       org.opencontainers.image.source="https://github.com/pilat/launcher"
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /out/launcher /usr/local/bin/launcher
 
 CMD ["launcher"]
